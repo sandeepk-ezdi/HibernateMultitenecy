@@ -1,0 +1,13 @@
+create database multitenant;
+use multitenant;
+show tables;
+create table Patients
+(
+ ID int NOT NULL AUTO_INCREMENT,
+ NAME varchar(50) NOT NULL,
+ AGE int NOT Null,
+ SEX varchar (10) NOT NULL,
+ CITY varchar (30) NOT NULL,
+ HOSPITAL_ID varchar (20) NOT NULL,
+ PRIMARY KEY (ID)
+);
