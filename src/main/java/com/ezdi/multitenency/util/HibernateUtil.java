@@ -5,6 +5,8 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
 
+import com.ezdi.multitenency.interceptor.TenantInterceptor;
+
 
 
 public class HibernateUtil {
@@ -16,6 +18,12 @@ public class HibernateUtil {
 		try {
 			Configuration configuration = new Configuration();
 			configuration.configure("hibernate.cfg.xml");
+			
+			//Start-Need to comment following two statements to Enable Session Level Intercepter
+			TenantInterceptor interceptor= new TenantInterceptor();
+			configuration.setInterceptor(interceptor);
+			//End
+			
 			serviceRegistry = new StandardServiceRegistryBuilder(). applySettings(configuration.getProperties()).build();
 			sessionFactory = configuration.configure().buildSessionFactory(serviceRegistry);
 			return sessionFactory;

@@ -23,9 +23,14 @@ public class PatientDAO {
 	public int addPatient(Patient patient) {
 	
 		SessionFactory sf=HibernateUtil.getSessionFactory();
-		TenantInterceptor interceptor= new TenantInterceptor();
-		Session session = sf.withOptions().interceptor(interceptor).openSession(); 
+		
+		//Start-Need to Uncomment following two statements to Enable Session Level Intercepter
+		
+		/*TenantInterceptor interceptor= new TenantInterceptor();
+		Session session = sf.withOptions().interceptor(interceptor).openSession(); */
+		
 		//session.enableFilter("hospitalFilter").setParameter("hospitalId", hospitalId);
+		Session session = sf.openSession();
 		session.beginTransaction();
 		int id = (Integer) session.save(patient);
 		session.getTransaction().commit();
@@ -41,14 +46,16 @@ public class PatientDAO {
 		
 		List<Patient> patients=null;
 		SessionFactory sf=HibernateUtil.getSessionFactory();
-		TenantInterceptor interceptor= new TenantInterceptor();
-		Session session = sf.withOptions().interceptor(interceptor).openSession();
+		//Start-Need to Uncomment following two statements to Enable Session Level Intercepter
+		
+		/*TenantInterceptor interceptor= new TenantInterceptor();
+		Session session = sf.withOptions().interceptor(interceptor).openSession();*/
+		
+		Session session = sf.openSession();
+		
 		//session.enableFilter("hospitalFilter").setParameter("hospitalId",hospitalId);
 		session.beginTransaction();
-/*
-		List<Patient> patients = (List<Patient>) session.createQuery(
-				"FROM Patient s ORDER BY s.name ASC").list();
-*/
+
         final Criteria criteria = session.createCriteria(Patient.class,"patient");
         criteria.add(Restrictions.eq("patient.name", "Runit"));
         patients=criteria.list();
@@ -63,14 +70,19 @@ public class PatientDAO {
 	 * This method updates a specific Patient object
 	 */
 	public void updatePatient(int id, String city) {
+		
 		SessionFactory sf=HibernateUtil.getSessionFactory();
-		TenantInterceptor interceptor= new TenantInterceptor();
-		Session session = sf.withOptions().interceptor(interceptor).openSession();
+		//Start-Need to Uncomment following two statements to Enable Session Level Intercepter
+		
+		/*TenantInterceptor interceptor= new TenantInterceptor();
+		Session session = sf.withOptions().interceptor(interceptor).openSession();*/
+		
+		Session session = sf.openSession();
 		session.beginTransaction();
 
 		Patient patient = (Patient) session.get(Patient.class, id);
 		patient.setCity(city);
-		//patient.setHospitalId(null);
+		
 		session.update(patient);//No need to update manually as it will be updated automatically on transaction close.
 		session.getTransaction().commit();
 		session.close();
@@ -81,8 +93,12 @@ public class PatientDAO {
 	 */
 	public void deletePatient(int id) {
 		SessionFactory sf=HibernateUtil.getSessionFactory();
-		TenantInterceptor interceptor= new TenantInterceptor();
-		Session session = sf.withOptions().interceptor(interceptor).openSession();
+		//Start-Need to Uncomment following two statements to Enable Session Level Intercepter
+		
+		/*TenantInterceptor interceptor= new TenantInterceptor();
+		Session session = sf.withOptions().interceptor(interceptor).openSession();*/
+		
+		Session session = sf.openSession();
 		session.beginTransaction();
 
 		Patient patient = (Patient) session.get(Patient.class, id);
