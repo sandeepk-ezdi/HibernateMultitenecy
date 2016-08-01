@@ -10,7 +10,7 @@ How to Use Session Level Interceptor:-
    TenantInterceptor interceptor= new TenantInterceptor();
 	 configuration.setInterceptor(interceptor);
 	 
-2. You need to uncommit following lines inside class com.ezdi.multitenency.dao.PatientDAO
+2. You need to uncomment following lines inside class com.ezdi.multitenency.dao.PatientDAO
 
     /*TenantInterceptor interceptor= new TenantInterceptor();
 		Session session = sf.withOptions().interceptor(interceptor).openSession(); */
