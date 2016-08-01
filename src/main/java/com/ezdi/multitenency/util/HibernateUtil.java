@@ -1,25 +1,39 @@
 package com.ezdi.multitenency.util;
 
 import org.hibernate.SessionFactory;
-import org.hibernate.cfg.AnnotationConfiguration;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.service.ServiceRegistry;
 
-@SuppressWarnings("deprecation")
+
+
 public class HibernateUtil {
-	
-	private static final SessionFactory sessionFactory;
-	
-	static{
-		try{
-			sessionFactory = new AnnotationConfiguration().configure().buildSessionFactory();
+	private static ServiceRegistry serviceRegistry;
 
-		}catch (Throwable ex) {
-			System.err.println("Session Factory could not be created." + ex);
+	private static  SessionFactory sessionFactory;
+
+	private static SessionFactory buildSessionFactory() {
+		try {
+			Configuration configuration = new Configuration();
+			configuration.configure("hibernate.cfg.xml");
+			serviceRegistry = new StandardServiceRegistryBuilder(). applySettings(configuration.getProperties()).build();
+			sessionFactory = configuration.configure().buildSessionFactory(serviceRegistry);
+			return sessionFactory;
+		}
+		catch (Throwable ex) {
+			// Make sure you log the exception, as it might be swallowed
+			System.err.println("Initial SessionFactory creation failed." + ex);
 			throw new ExceptionInInitializerError(ex);
-		}	
+		}
 	}
-	
-	public static SessionFactory getSessionFactory() {
-		return sessionFactory;
-	}
+
+    public static SessionFactory getSessionFactory() {
+        return buildSessionFactory();
+    }
+    
+    public static void shutdown() {
+    	// Close caches and connection pools
+    	getSessionFactory().close();
+    }
 	
 }

@@ -13,9 +13,9 @@ public class PatientService {
 	/**
 	 * This method saves a Patient object in database
 	 */
-	public int addPatient(Patient patient, String hospitalId) {
+	public int addPatient(Patient patient) {
 		
-		return dao.addPatient(patient, hospitalId);
+		return dao.addPatient(patient);
 	}
 
 	/**
@@ -30,9 +30,9 @@ public class PatientService {
 	/**
 	 * This method updates a specific Patient object
 	 */
-	public void updatePatient(int id, String city,String hospitalId) {
+	public void updatePatient(int id, String city) {
 		
-		dao.updatePatient(id, city, hospitalId);
+		dao.updatePatient(id, city);
 	}
 
 	/**

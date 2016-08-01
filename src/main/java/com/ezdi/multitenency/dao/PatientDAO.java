@@ -2,10 +2,16 @@ package com.ezdi.multitenency.dao;
 
 import java.util.List;
 
+import org.hibernate.Criteria;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Restrictions;
 
 import com.ezdi.multitenency.bean.Patient;
+import com.ezdi.multitenency.interceptor.TenantInterceptor;
 import com.ezdi.multitenency.util.HibernateUtil;
+import com.ezdi.multitenency.util.HospitalConstants;
+
 
 
 
@@ -14,10 +20,12 @@ public class PatientDAO {
 	/**
 	 * This method saves a Patient object in database
 	 */
-	public int addPatient(Patient patient, String hospitalId) {
-		
-		Session session = HibernateUtil.getSessionFactory().openSession();
-		session.enableFilter("hospitalFilter").setParameter("hospitalId", hospitalId);
+	public int addPatient(Patient patient) {
+	
+		SessionFactory sf=HibernateUtil.getSessionFactory();
+		TenantInterceptor interceptor= new TenantInterceptor();
+		Session session = sf.withOptions().interceptor(interceptor).openSession(); 
+		//session.enableFilter("hospitalFilter").setParameter("hospitalId", hospitalId);
 		session.beginTransaction();
 		int id = (Integer) session.save(patient);
 		session.getTransaction().commit();
@@ -30,14 +38,22 @@ public class PatientDAO {
 	 * database for Particular Hospital
 	 */
 	public List<Patient> getAllPatients(String hospitalId) {
-		Session session = HibernateUtil.getSessionFactory().openSession();
-		session.enableFilter("hospitalFilter").setParameter("hospitalId", hospitalId);
-		session.beginTransaction();
-
 		
+		List<Patient> patients=null;
+		SessionFactory sf=HibernateUtil.getSessionFactory();
+		TenantInterceptor interceptor= new TenantInterceptor();
+		Session session = sf.withOptions().interceptor(interceptor).openSession();
+		//session.enableFilter("hospitalFilter").setParameter("hospitalId",hospitalId);
+		session.beginTransaction();
+/*
 		List<Patient> patients = (List<Patient>) session.createQuery(
 				"FROM Patient s ORDER BY s.name ASC").list();
-
+*/
+        final Criteria criteria = session.createCriteria(Patient.class,"patient");
+        criteria.add(Restrictions.eq("patient.name", "Runit"));
+        patients=criteria.list();
+		
+		
 		session.getTransaction().commit();
 		session.close();
 		return patients;
@@ -46,14 +62,16 @@ public class PatientDAO {
 	/**
 	 * This method updates a specific Patient object
 	 */
-	public void updatePatient(int id, String city,String hospitalId) {
-		Session session = HibernateUtil.getSessionFactory().openSession();
-		session.enableFilter("hospitalFilter").setParameter("hospitalId", hospitalId);
+	public void updatePatient(int id, String city) {
+		SessionFactory sf=HibernateUtil.getSessionFactory();
+		TenantInterceptor interceptor= new TenantInterceptor();
+		Session session = sf.withOptions().interceptor(interceptor).openSession();
 		session.beginTransaction();
 
 		Patient patient = (Patient) session.get(Patient.class, id);
 		patient.setCity(city);
-		//session.update(student);//No need to update manually as it will be updated automatically on transaction close.
+		//patient.setHospitalId(null);
+		session.update(patient);//No need to update manually as it will be updated automatically on transaction close.
 		session.getTransaction().commit();
 		session.close();
 	}
@@ -62,10 +80,13 @@ public class PatientDAO {
 	 * This method deletes a specific Patient object
 	 */
 	public void deletePatient(int id) {
-		Session session = HibernateUtil.getSessionFactory().openSession();
+		SessionFactory sf=HibernateUtil.getSessionFactory();
+		TenantInterceptor interceptor= new TenantInterceptor();
+		Session session = sf.withOptions().interceptor(interceptor).openSession();
 		session.beginTransaction();
 
 		Patient patient = (Patient) session.get(Patient.class, id);
+		
 		session.delete(patient);
 		session.getTransaction().commit();
 		session.close();

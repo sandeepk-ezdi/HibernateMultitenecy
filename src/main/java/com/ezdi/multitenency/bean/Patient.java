@@ -1,7 +1,5 @@
 package com.ezdi.multitenency.bean;
 
-import java.io.Serializable;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -18,7 +16,7 @@ import org.hibernate.annotations.ParamDef;
 @FilterDef(name="hospitalFilter",parameters=@ParamDef(name="hospitalId",type="string"))
 @Filters(@Filter(name="hospitalFilter", condition="HOSPITAL_ID=:hospitalId"))
 @Table(name = "Patients")
-public class Patient implements Serializable {
+public class Patient implements BaseTenantBean {
 
 	private static final long serialVersionUID = 1L;
 
@@ -38,6 +36,7 @@ public class Patient implements Serializable {
 
 	@Column(name = "CITY", nullable = false)
 	private String city;
+	
 	
 	@Column(name = "HOSPITAL_ID", nullable = false)
 	private String hospitalId;
@@ -105,28 +104,7 @@ public class Patient implements Serializable {
 		this.hospitalId = hospitalId;
 	}
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + id;
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (!(obj instanceof Patient))
-			return false;
-		Patient other = (Patient) obj;
-		if (id != other.id)
-			return false;
-		return true;
-	}
-
+	
 	@Override
 	public String toString() {
 		return "Patient [id=" + id + ", name=" + name + ", age=" + age + ", sex=" + sex + ", city=" + city
